@@ -1,13 +1,15 @@
-import datetime
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
-def save_excel_with_timestamp(dataframes_dict):
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    output_path = Path(f"output_result_{now}.xlsx")
+def read_excel_lines(uploaded_file):
+    return pd.read_excel(uploaded_file, header=7)
 
-    with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
-        for sheet_name, df in dataframes_dict.items():
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-    return output_path
+def save_excel_with_timestamp(dataframes):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = Path(f"Результат_компоновки_{timestamp}.xlsx")
+    with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
+        sheet_names = ["Ведомость распределения", "Ведомость РКЭО", "Ведомость ШУЭО"]
+        for df, name in zip(dataframes, sheet_names):
+            df.to_excel(writer, index=False, sheet_name=name)
+    return file_path
